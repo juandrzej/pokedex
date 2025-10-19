@@ -21,6 +21,11 @@ func TestCleanInput(t *testing.T) {
 			input:    "i	like_trains",
 			expected: []string{"i", "like_trains"},
 		},
+
+		{
+			input:    "yOur      MoMMa",
+			expected: []string{"your", "momma"},
+		},
 	}
 
 	for _, c := range cases {
