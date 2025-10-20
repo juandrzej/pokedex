@@ -3,7 +3,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd ~/Code/bootdev/pokedex
+cd ~/Code/pokedex
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -13,13 +13,11 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +18 main.go
-badd +27 ~/Code/bootdev/pokedex/repl_test.go
+badd +1 main.go
 argglobal
 %argdel
 edit main.go
 argglobal
-balt ~/Code/bootdev/pokedex/repl_test.go
 setlocal foldmethod=manual
 setlocal foldexpr=0
 setlocal foldmarker={{{,}}}
