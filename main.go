@@ -25,12 +25,19 @@ func main() {
 		},
 		"map": {
 			name:        "map",
-			description: "It displays the names of 20 location areas in the Pokemon world.",
+			description: "It displays the names of  (next) 20 location areas in the Pokemon world.",
 			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "It displays the names of (previous) 20 location areas in the Pokemon world.",
+			callback:    commandMapb,
 		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
+
+	config := Config{}
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -42,7 +49,7 @@ func main() {
 			fmt.Println("Unknown command")
 			continue
 		}
-		if err := command.callback(); err != nil {
+		if err := command.callback(&config); err != nil {
 			fmt.Println(err)
 		}
 
@@ -62,13 +69,13 @@ func cleanInput(text string) []string {
 	return afterSplit
 }
 
-func commandExit() error {
+func commandExit(config *Config) error {
 	fmt.Print("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp() error {
+func commandHelp(config *Config) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()
@@ -78,9 +85,24 @@ func commandHelp() error {
 	return nil
 }
 
-func commandMap() error {
+func commandMap(config *Config) error {
 	url := "https://pokeapi.co/api/v2/location-area/"
+	if config.Next != "" {
+		url = config.Next
+	}
+	return helperMap(config, url)
+}
 
+func commandMapb(config *Config) error {
+	if config.Previous == "" {
+		fmt.Println("you're on the first page")
+		return nil
+	}
+	url := config.Previous
+	return helperMap(config, url)
+}
+
+func helperMap(config *Config, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -102,6 +124,9 @@ func commandMap() error {
 		return err
 	}
 
+	config.Next = pArea.Next
+	config.Previous = pArea.Previous
+
 	for _, area := range pArea.Results {
 		fmt.Println(area.Name)
 	}
@@ -112,15 +137,20 @@ func commandMap() error {
 type pokeArea struct {
 	Count    int    `json:"count"`
 	Next     string `json:"next"`
-	Previous any    `json:"previous"`
+	Previous string `json:"previous"`
 	Results  []struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	} `json:"results"`
 }
 
+type Config struct {
+	Next     string
+	Previous string
+}
+
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*Config) error
 }
