@@ -2,7 +2,10 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -10,15 +13,20 @@ import (
 func main() {
 
 	commands = map[string]cliCommand{
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
+		"map": {
+			name:        "map",
+			description: "It displays the names of 20 location areas in the Pokemon world.",
+			callback:    commandMap,
 		},
 	}
 
@@ -68,6 +76,47 @@ func commandHelp() error {
 		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
 	}
 	return nil
+}
+
+func commandMap() error {
+	url := "https://pokeapi.co/api/v2/location-area/"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 299 {
+		return fmt.Errorf("Failed status code: %v", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var pArea pokeArea
+	err = json.Unmarshal(body, &pArea)
+	if err != nil {
+		return err
+	}
+
+	for _, area := range pArea.Results {
+		fmt.Println(area.Name)
+	}
+
+	return nil
+}
+
+type pokeArea struct {
+	Count    int    `json:"count"`
+	Next     string `json:"next"`
+	Previous any    `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"results"`
 }
 
 type cliCommand struct {
