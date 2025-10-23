@@ -33,7 +33,6 @@ func main() {
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
-
 	config := Config{}
 
 	for {
@@ -62,33 +61,4 @@ func cleanInput(text string) []string {
 		afterSplit[i] = strings.ToLower(char)
 	}
 	return afterSplit
-}
-
-func commandExit(config *Config) error {
-	fmt.Print("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-var commands map[string]cliCommand
-
-func commandHelp(config *Config) error {
-	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage:")
-	fmt.Println()
-	for _, cmd := range commands {
-		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
-	}
-	return nil
-}
-
-type Config struct {
-	Next     string
-	Previous string
-}
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(*Config) error
 }
