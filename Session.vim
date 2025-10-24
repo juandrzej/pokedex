@@ -15,7 +15,8 @@ else
 endif
 badd +12 main.go
 badd +46 ~/Code/pokedex/internal/pokeapi/pokeapi.go
-badd +21 ~/Code/pokedex/commands.go
+badd +29 ~/Code/pokedex/commands.go
+badd +9 internal/pokecache/pokecache.go
 argglobal
 %argdel
 edit main.go
@@ -57,9 +58,9 @@ keepjumps 12
 normal! 0
 wincmd w
 argglobal
-if bufexists(fnamemodify("~/Code/pokedex/commands.go", ":p")) | buffer ~/Code/pokedex/commands.go | else | edit ~/Code/pokedex/commands.go | endif
+if bufexists(fnamemodify("internal/pokecache/pokecache.go", ":p")) | buffer internal/pokecache/pokecache.go | else | edit internal/pokecache/pokecache.go | endif
 if &buftype ==# 'terminal'
-  silent file ~/Code/pokedex/commands.go
+  silent file internal/pokecache/pokecache.go
 endif
 balt ~/Code/pokedex/internal/pokeapi/pokeapi.go
 setlocal foldmethod=manual
@@ -72,13 +73,14 @@ setlocal foldnestmax=20
 setlocal foldenable
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 71 - ((53 * winheight(0) + 27) / 54)
+let s:l = 1 - ((0 * winheight(0) + 27) / 54)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 71
+keepjumps 1
 normal! 0
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 118 + 119) / 238)
 exe 'vert 2resize ' . ((&columns * 119 + 119) / 238)
 tabnext 1
