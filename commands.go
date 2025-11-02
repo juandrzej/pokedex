@@ -100,3 +100,24 @@ func commandCatch(cfg *Config, args []string) error {
 	}
 	return nil
 }
+
+func commandInspect(cfg *Config, args []string) error {
+	pokemonName := args[0]
+	pokemon, ok := cfg.Pokedex[pokemonName]
+	if !ok {
+		fmt.Println("Pokemon not in pokedex yet.")
+		return nil
+	}
+	fmt.Println("Name: " + pokemonName)
+	fmt.Printf("Height: %d\n", pokemon.Height)
+	fmt.Printf("Weight: %d\n", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  -%s: %d\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, typePoke := range pokemon.Types {
+		fmt.Println("  - " + typePoke.Type.Name)
+	}
+	return nil
+}

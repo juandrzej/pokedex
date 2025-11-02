@@ -43,6 +43,11 @@ func main() {
 			description: "Catching Pokemon adds them to the user's Pokedex.",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect",
+			description: "It takes the name of a Pokemon and prints the name, height, weight, stats and type(s) of the Pokemon.",
+			callback:    commandInspect,
+		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
