@@ -3,9 +3,23 @@ package pokeapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/juandrzej/pokedex/internal/pokecache"
 	"io"
 	"net/http"
+	"time"
 )
+
+type Client struct {
+	httpClient *http.Client
+	cache      *pokecache.Cache
+}
+
+func NewClient(cacheInterval time.Duration) *Client {
+	return &Client{
+		httpClient: &http.Client{Timeout: 10 * time.Second},
+		cache:      pokecache.NewCache(cacheInterval),
+	}
+}
 
 type LocationAreaList struct {
 	Count    int    `json:"count"`
@@ -19,12 +33,20 @@ type LocationAreaList struct {
 
 const baseUrl = "https://pokeapi.co/api/v2/location-area/"
 
-func FetchLocationAreas(url string) (LocationAreaList, error) {
+func (c *Client) FetchLocationAreas(url string) (LocationAreaList, error) {
 	if url == "" {
 		url = baseUrl
 	}
 
-	res, err := http.Get(url)
+	if b, ok := c.cache.Get(url); ok {
+		var areas LocationAreaList
+		if err := json.Unmarshal(b, &areas); err != nil {
+			return LocationAreaList{}, err
+		}
+		return areas, nil
+	}
+
+	res, err := c.httpClient.Get(url)
 	if err != nil {
 		return LocationAreaList{}, err
 	}
@@ -39,10 +61,11 @@ func FetchLocationAreas(url string) (LocationAreaList, error) {
 		return LocationAreaList{}, err
 	}
 
+	c.cache.Add(url, body)
+
 	var areas LocationAreaList
 	if err := json.Unmarshal(body, &areas); err != nil {
 		return LocationAreaList{}, err
 	}
-
 	return areas, nil
 }

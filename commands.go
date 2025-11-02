@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Next     string
 	Previous string
+	Client   *pokeapi.Client
 }
 
 type cliCommand struct {
@@ -35,14 +36,11 @@ func commandHelp(*Config) error {
 	return nil
 }
 func commandMap(cfg *Config) error {
-	list, err := pokeapi.FetchLocationAreas(cfg.Next)
+	list, err := cfg.Client.FetchLocationAreas(cfg.Next)
 	if err != nil {
 		return err
 	}
-
-	commandMapHelper(cfg, list)
-
-	return nil
+	return commandMapHelper(cfg, list)
 }
 
 func commandMapb(cfg *Config) error {
@@ -51,20 +49,16 @@ func commandMapb(cfg *Config) error {
 		return nil
 	}
 
-	list, err := pokeapi.FetchLocationAreas(cfg.Previous)
+	list, err := cfg.Client.FetchLocationAreas(cfg.Previous)
 	if err != nil {
 		return err
 	}
-
-	commandMapHelper(cfg, list)
-
-	return nil
+	return commandMapHelper(cfg, list)
 }
 
 func commandMapHelper(cfg *Config, list pokeapi.LocationAreaList) error {
 	cfg.Next = list.Next
 	cfg.Previous = list.Previous
-
 	for _, area := range list.Results {
 		fmt.Println(area.Name)
 	}
