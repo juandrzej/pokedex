@@ -31,19 +31,22 @@ type LocationAreaList struct {
 	} `json:"results"`
 }
 
-const baseUrl = "https://pokeapi.co/api/v2/location-area/"
+const baseURL = "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20"
 
 func (c *Client) FetchLocationAreas(url string) (LocationAreaList, error) {
 	if url == "" {
-		url = baseUrl
+		url = baseURL
 	}
 
 	if b, ok := c.cache.Get(url); ok {
+		fmt.Println("[cache] hit:", url)
 		var areas LocationAreaList
 		if err := json.Unmarshal(b, &areas); err != nil {
 			return LocationAreaList{}, err
 		}
 		return areas, nil
+	} else {
+		fmt.Println("[cache] miss:", url)
 	}
 
 	res, err := c.httpClient.Get(url)
