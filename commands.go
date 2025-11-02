@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/juandrzej/pokedex/internal/pokeapi"
+	"math/rand"
 	"os"
 )
 
@@ -10,6 +11,7 @@ type Config struct {
 	Next     string
 	Previous string
 	Client   *pokeapi.Client
+	Pokedex  map[string]pokeapi.Pokemon
 }
 
 type cliCommand struct {
@@ -78,11 +80,23 @@ func commandExplore(cfg *Config, args []string) error {
 }
 
 func commandCatch(cfg *Config, args []string) error {
-	fmt.Printf("Throwing a Pokeball at %s...\n", args[0])
-	pokemon, err := cfg.Client.FetchPokemonData(args[0])
+	pokemonName := args[0]
+	pokemon, err := cfg.Client.FetchPokemonData(pokemonName)
 	if err != nil {
 		return err
 	}
-	fmt.Println(pokemon)
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
+	baseExp := pokemon.BaseExperience
+	userRoll := rand.Intn(300)
+	if baseExp > userRoll {
+		fmt.Printf("%s escaped!\n", pokemonName)
+	} else {
+		cfg.Pokedex[pokemonName] = pokemon
+		fmt.Printf("%s was caught!\n", pokemonName)
+	}
+	fmt.Println(baseExp, userRoll)
+	for name := range cfg.Pokedex {
+		fmt.Println(name)
+	}
 	return nil
 }

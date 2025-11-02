@@ -46,7 +46,10 @@ func main() {
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
-	config := &Config{Client: pokeapi.NewClient(5 * time.Second)}
+	config := &Config{
+		Client:  pokeapi.NewClient(5 * time.Second),
+		Pokedex: make(map[string]pokeapi.Pokemon),
+	}
 
 	for {
 		fmt.Print("Pokedex > ")
