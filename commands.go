@@ -15,18 +15,18 @@ type Config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*Config) error
+	callback    func(*Config, []string) error
 }
 
 var commands map[string]cliCommand
 
-func commandExit(*Config) error {
+func commandExit(*Config, []string) error {
 	fmt.Print("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(*Config) error {
+func commandHelp(*Config, []string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()
@@ -35,7 +35,7 @@ func commandHelp(*Config) error {
 	}
 	return nil
 }
-func commandMap(cfg *Config) error {
+func commandMap(cfg *Config, args []string) error {
 	list, err := cfg.Client.FetchLocationAreas(cfg.Next)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func commandMap(cfg *Config) error {
 	return commandMapHelper(cfg, list)
 }
 
-func commandMapb(cfg *Config) error {
+func commandMapb(cfg *Config, args []string) error {
 	if cfg.Previous == "" {
 		fmt.Println("you're on the first page")
 		return nil
@@ -61,6 +61,18 @@ func commandMapHelper(cfg *Config, list pokeapi.LocationAreaList) error {
 	cfg.Previous = list.Previous
 	for _, area := range list.Results {
 		fmt.Println(area.Name)
+	}
+	return nil
+}
+
+func commandExplore(cfg *Config, args []string) error {
+	list, err := cfg.Client.FetchLocationPokemons(args[0])
+	if err != nil {
+		return err
+	}
+	fmt.Println("Found Pokemon:")
+	for _, pokemon := range list.PokemonEncounters {
+		fmt.Println(" - " + pokemon.Pokemon.Name)
 	}
 	return nil
 }

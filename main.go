@@ -33,6 +33,11 @@ func main() {
 			description: "It displays the names of (previous) 20 location areas in the Pokemon world.",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "It displays a list of all the Pokémon located in a given location.",
+			callback:    commandExplore,
+		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -41,19 +46,16 @@ func main() {
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
-		text := scanner.Text()
+		input := cleanInput(scanner.Text())
 
-		command, ok := commands[text]
+		command, ok := commands[input[0]]
 		if !ok {
 			fmt.Println("Unknown command")
 			continue
 		}
-		if err := command.callback(config); err != nil {
+		if err := command.callback(config, input[1:]); err != nil {
 			fmt.Println(err)
 		}
-
-		// splitText := cleanInput(text)
-		// fmt.Printf("Your command was: %s\n", splitText[0])
 	}
 
 }
