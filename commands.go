@@ -93,11 +93,9 @@ func commandCatch(cfg *Config, args []string) error {
 	} else {
 		cfg.Pokedex[pokemonName] = pokemon
 		fmt.Printf("%s was caught!\n", pokemonName)
+		fmt.Println("You may now inspect it with the inspect command.")
 	}
 	fmt.Println(baseExp, userRoll)
-	for name := range cfg.Pokedex {
-		fmt.Println(name)
-	}
 	return nil
 }
 
@@ -118,6 +116,14 @@ func commandInspect(cfg *Config, args []string) error {
 	fmt.Println("Types:")
 	for _, typePoke := range pokemon.Types {
 		fmt.Println("  - " + typePoke.Type.Name)
+	}
+	return nil
+}
+
+func commandPokedex(cfg *Config, args []string) error {
+	fmt.Println("Your Pokedex:")
+	for name := range cfg.Pokedex {
+		fmt.Println(" - " + name)
 	}
 	return nil
 }
