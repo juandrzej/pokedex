@@ -38,6 +38,11 @@ func main() {
 			description: "It displays a list of all the Pokémon located in a given location.",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Catching Pokemon adds them to the user's Pokedex.",
+			callback:    commandCatch,
+		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)

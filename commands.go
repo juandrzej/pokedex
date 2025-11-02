@@ -76,3 +76,13 @@ func commandExplore(cfg *Config, args []string) error {
 	}
 	return nil
 }
+
+func commandCatch(cfg *Config, args []string) error {
+	fmt.Printf("Throwing a Pokeball at %s...\n", args[0])
+	pokemon, err := cfg.Client.FetchPokemonData(args[0])
+	if err != nil {
+		return err
+	}
+	fmt.Println(pokemon)
+	return nil
+}
